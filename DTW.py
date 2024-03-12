@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
-import ruptures as rpt
 from tslearn.metrics import dtw
 from tslearn.metrics import soft_dtw
 from tqdm import tqdm
@@ -10,7 +9,7 @@ import warnings
 import os 
 warnings.filterwarnings("ignore")
 
-df=pd.read_csv('dataset.csv',sep=";")
+df=pd.read_csv('dataBrutHouse.csv',sep=";")
 
 #Dataset structure :  
 # -> nbVente : value of time series 
@@ -28,7 +27,7 @@ nomCat = nomCat.sort_values(by=['nbVente'],ascending=False)
 nomCat = nomCat['nom']
 distance = []
 print(nomCat)
-gamma = 0.005 #gamma parameter for SoftDTW version
+gamma = 0.01 #gamma parameter for SoftDTW version
 cpt = nomCat
 
 for i, nomI in enumerate(tqdm(cpt, desc ="global progression")):
@@ -43,14 +42,14 @@ for i, nomI in enumerate(tqdm(cpt, desc ="global progression")):
 		df1['date'] = pd.to_datetime( df1['date'],dayfirst =True)
 
 		df1 = df1.set_index(df1['date'])
-		df1 = df1.resample("M").sum().ffill()
+		df1 = df1.resample("M").sum(numeric_only=True).ffill()
 		cpt = cpt.iloc[1:]
 	for j, nomJ in enumerate(tqdm(cpt, desc ="loop progression")):
 		df2= df.loc[df['nom'] == str(nomJ)]
 		if not df2.empty:
 			df2['date'] = pd.to_datetime( df2['date'],dayfirst =True)
 			df2 = df2.set_index(df2['date'])
-			df2 = df2.resample("M").sum().ffill()
+			df2 = df2.resample("M").sum(numeric_only=True).ffill()
 			min_max_scaler = MinMaxScaler()
 			df2['nbVente'] = min_max_scaler.fit_transform(df2['nbVente'].values.reshape(-1, 1))
 			df1['nbVente'] = min_max_scaler.fit_transform(df1['nbVente'].values.reshape(-1, 1))

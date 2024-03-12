@@ -7,14 +7,13 @@ from sklearn.metrics import silhouette_score
 from sklearn.metrics import calinski_harabasz_score
 from sklearn.metrics import davies_bouldin_score
 import sklearn.metrics as metrics
-import hdbscan
 import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.manifold import TSNE
 from sklearn.cluster import SpectralClustering
 from sklearn.manifold import SpectralEmbedding
 from sklearn_extra.cluster import KMedoids
-df=pd.read_csv('DTW_MatrixSoft0.01.csv',sep=";") #Use the matrix create by the DTW
+df=pd.read_csv('DTW_Matrix',sep=";") #Use the matrix create by the DTW
 print(df) 
 df = df.iloc[: , 1:]
 name = df.iloc[: , 0]
@@ -61,7 +60,6 @@ for cpt2 in range(1,2):
         k_list = range(2,22)
         for k in k_list:
             print(str(k)+'/'+(str(len(k_list))))
-            #km =  hdbscan.HDBSCAN(min_cluster_size=k,min_samples=3,cluster_selection_method='leaf')
             km = SpectralClustering(n_clusters=k,assign_labels='discretize',affinity='nearest_neighbors',random_state=0)
             #km = KMeans(n_clusters=k, n_init=100, max_iter=400, init='k-means++', random_state=42)
             #km = KMedoids(n_clusters=k, max_iter=400, init='k-medoids++',random_state=42)
@@ -81,10 +79,10 @@ for cpt2 in range(1,2):
 
         #Choose your clustering algorithm 
 
-        #clusterer =hdbscan.HDBSCAN(min_cluster_size=k,min_samples=3,cluster_selection_method='leaf').fit(coords)
+        
         #clusterer = SpectralClustering(n_clusters=10,affinity='nearest_neighbors',random_state=0).fit(coords)
-        #clusterer = KMeans(n_clusters=10, n_init=100, max_iter=400, init='k-means++', random_state=42).fit(coords)
-        clusterer = KMedoids(n_clusters=8, max_iter=400, init='k-medoids++',random_state=42).fit(df)
+        clusterer = KMeans(n_clusters=8, n_init=100, max_iter=400, init='k-means++', random_state=42).fit(coords)
+        #clusterer = KMedoids(n_clusters=8, max_iter=400, init='k-medoids++',random_state=42).fit(df)
 
         res.append(silhouette_score(coords, clusterer.labels_, metric='euclidean'))
         resCHScore.append(calinski_harabasz_score(coords, clusterer.labels_))
@@ -105,8 +103,8 @@ for cpt2 in range(1,2):
         plt.scatter(tsne_coords[:,0],tsne_coords[:,1], s=50, linewidth=0, alpha=0.6)
         #plt.show()
         #Clustering with t_sne
-        clusterer = SpectralClustering(n_clusters=10 ,affinity='nearest_neighbors',random_state=0).fit(tsne_coords)
-        #clusterer =hdbscan.HDBSCAN(min_cluster_size=k,min_samples=3,cluster_selection_method='leaf').fit(tsne_coords)
+        clusterer = SpectralClustering(n_clusters=8 ,affinity='nearest_neighbors',random_state=0).fit(tsne_coords)
+        
         #clusterer = KMeans(n_clusters=10, n_init=100, max_iter=400, init='k-means++', random_state=42).fit(tsne_coords)
         #clusterer = KMedoids(n_clusters=10, max_iter=400, init='k-medoids++',random_state=42).fit(tsne_coords)
         
